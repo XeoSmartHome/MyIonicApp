@@ -12,7 +12,7 @@ const MoviesPage: React.FC = () => {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        dispatch(getMoviesAction())
+        // dispatch(getMoviesAction())
     }, []);
 
 
