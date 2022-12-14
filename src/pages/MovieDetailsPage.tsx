@@ -1,10 +1,10 @@
 import {IonButton, IonDatetime, IonList, useIonToast} from "@ionic/react";
 import React, {FC, useCallback} from "react";
-import {createMovieAction} from "../store/reducers/movies/actions";
+import {createMovieAction, updateMovieAction} from "../store/reducers/movies/actions";
 import {useAppDispatch, useAppSelector} from "../store";
 import {Controller, useForm} from "react-hook-form";
 import CTextInput from "../components/Common/CTextInput";
-import {selectMovieById, selectMovies} from "../store/reducers/movies/selectors";
+import {selectMovieById} from "../store/reducers/movies/selectors";
 import {useHistory} from "react-router-dom";
 
 const GENERIC_RULES = {required: {value: true, message: "This field is required"}};
@@ -12,6 +12,7 @@ const GENERIC_RULES = {required: {value: true, message: "This field is required"
 interface MovieDetailsPageProps {
     scope: "CREATE" | "EDIT";
 }
+
 const MovieDetailsPage: FC<MovieDetailsPageProps> = ({scope}) => {
     const history = useHistory();
     const dispatch = useAppDispatch();
@@ -19,14 +20,14 @@ const MovieDetailsPage: FC<MovieDetailsPageProps> = ({scope}) => {
     const [showToast] = useIonToast();
 
     const {control, getValues, handleSubmit} = useForm({
-        defaultValues: scope === "CREATE" && ! movie ? {
+        defaultValues: scope === "CREATE" && !movie ? {
             title: "",
             description: "",
             year: 2022,
             location: "acasa",
             actors: [],
             date: new Date().toLocaleDateString()
-        }: movie,
+        } : movie,
     });
 
     const addMovie = useCallback(() => {
@@ -52,8 +53,26 @@ const MovieDetailsPage: FC<MovieDetailsPageProps> = ({scope}) => {
     }, [dispatch, getValues, history, showToast]);
 
     const updateMovie = useCallback(() => {
-
-    }, [dispatch, getValues, history, showToast]);
+        dispatch(updateMovieAction({
+            ...getValues(),
+            id: movie?.id || "",
+            date: new Date().toLocaleDateString()
+        })).unwrap().then(
+            () => {
+                showToast({
+                    message: "Movie updated successfully",
+                    duration: 2000,
+                    color: "success",
+                });
+                history.goBack();
+            }).catch((error) => {
+            showToast({
+                message: error,
+                duration: 2000,
+                color: "danger",
+            });
+        });
+    }, [dispatch, getValues, history, movie, showToast]);
 
     return (
         <IonList className={"ion-padding"}>
@@ -66,13 +85,13 @@ const MovieDetailsPage: FC<MovieDetailsPageProps> = ({scope}) => {
                         ref={ref}
                         value={value}
                         onIonChange={(event) => {
-                        onChange(event.detail.value);
-                    }}
+                            onChange(event.detail.value);
+                        }}
                         onIonBlur={onBlur}
                     />
                 )
             }} name={"date"}/>
-            <IonButton onClick={handleSubmit(addMovie)}>
+            <IonButton onClick={handleSubmit(scope === "CREATE" ? addMovie: updateMovie)}>
                 Add movie
             </IonButton>
         </IonList>

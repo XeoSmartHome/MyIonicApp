@@ -118,4 +118,32 @@ apiRouter.post("/movies", authMiddleware, (req, res) => {
     });
 });
 
+apiRouter.put("/movies/:movieId", authMiddleware, (req, res) => {
+    const {userId} = res.locals;
+
+    const {title, description, year, date, location} = req.body;
+    console.log("req.body", req.body);
+
+    if (!title || !description || !year || !date || !location) {
+        console.log("error", "Missing required fields");
+        return res.status(400).json({message: "Missing required fields"});
+    }
+
+    Movie.updateOne({
+        userId,
+        _id: req.params.movieId,
+    }, {
+        title,
+        description,
+        year,
+        date,
+        location,
+    }).then((movie) => {
+        res.send(mapMovie(movie));
+    }).catch((error) => {
+        console.log(error);
+        res.sendStatus(500);
+    });
+});
+
 export default apiRouter;
