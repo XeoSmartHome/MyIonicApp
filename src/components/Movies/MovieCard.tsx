@@ -19,7 +19,6 @@ const MovieCard: FC<MovieCardProps> = ({movie}) => {
         <IonCard onClick={goToMovieDetails}>
             <IonCardHeader>
                 <IonCardTitle>{movie.title}</IonCardTitle>
-                <IonCardSubtitle>Today</IonCardSubtitle>
             </IonCardHeader>
             <IonCardContent>
                 {movie.description}
