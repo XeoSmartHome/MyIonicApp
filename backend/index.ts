@@ -1,3 +1,5 @@
+import apiRouter from "./src/api";
+
 const express = require('express');
 const app = express();
 const http = require('http');
@@ -11,12 +13,16 @@ const io = new Server(server, {
 });
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
+    res.send('<h1>Hello world</h1>');
 });
+app.use('/api', apiRouter);
+
 
 io.on('connection', (socket) => {
     console.log('a user connected');
 });
+
+
 
 server.listen(5000, () => {
     console.log('listening on *:5000');

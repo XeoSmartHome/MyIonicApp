@@ -1,29 +1,49 @@
-import {createAsyncThunk, PayloadAction} from "@reduxjs/toolkit";
-import {Movie} from "../../../types/movie";
+import {createAsyncThunk} from "@reduxjs/toolkit";
+import {apiClient} from "../../../api";
+import {Movie} from "../../../api/generated";
 
 export const getMoviesAction = createAsyncThunk(
     "movies/get",
-    async (state, thunkAPI) => {
+    async (arg: { after: string }, thunkAPI) => {
         try {
-            return await fetch("http://localhost:8080/movies").then((response) => response.json());
-        } catch (e) {
-            console.log(e)
-            return thunkAPI.rejectWithValue("error");
+            const response = await apiClient.getMovies(arg.after);
+            return response.data;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.response.data);
         }
     },
 );
 
 export const createMovieAction = createAsyncThunk(
     "movies/create",
-    async (movie: Movie, thunkAPI) => {
+    async (arg: Movie, thunkAPI) => {
         try {
-            return await fetch("http://localhost:8080/movies", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(movie)
-            }).then((response) => response.json());
+            const response = await apiClient.createMovie(arg);
+            return response.data;
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e);
+        }
+    }
+)
+
+export const updateMovieAction = createAsyncThunk(
+    "movies/update",
+    async (arg: Movie, thunkAPI) => {
+        try {
+            const response = await apiClient.updateMovie(arg.id, arg);
+            return response.data;
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e);
+        }
+    }
+)
+
+export const deleteMovieAction = createAsyncThunk(
+    "movies/delete",
+    async (arg: Movie, thunkAPI) => {
+        try {
+            const response = await apiClient.deleteMovie(arg.id);
+            return response.data;
         } catch (e) {
             return thunkAPI.rejectWithValue(e);
         }

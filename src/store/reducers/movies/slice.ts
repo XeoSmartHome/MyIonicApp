@@ -1,9 +1,10 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {Movie} from "../../../types/movie";
-import {createMovieAction, getMoviesAction} from "./actions";
+import {createMovieAction, deleteMovieAction, getMoviesAction, updateMovieAction} from "./actions";
+import {Movie} from "../../../api/generated";
 
-type MoviesState = {
+export type MoviesState = {
     movies: Movie[];
+    nextMovieId?: string;
 }
 
 const initialState: MoviesState = {
@@ -15,19 +16,23 @@ const moviesSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        builder.addCase(getMoviesAction.pending, (state, action) => {
-            console.log("getMovies pending")
-        });
         builder.addCase(getMoviesAction.fulfilled, (state, action) => {
-            console.log(action.payload)
-            state.movies = action.payload;
+            state.movies = action.payload.movies;
+            state.nextMovieId = action.payload.next;
         });
-        builder.addCase(createMovieAction.pending, () => {
-            console.log("createMovie pending")
-        })
+
         builder.addCase(createMovieAction.fulfilled, (state, action) => {
             state.movies.push(action.payload)
-        })
+        });
+
+        builder.addCase(updateMovieAction.fulfilled, (state, action) => {
+            const index = state.movies.findIndex(movie => movie.id === action.payload.id);
+            state.movies[index] = action.payload;
+        });
+
+        builder.addCase(deleteMovieAction.fulfilled, (state, action) => {
+            state.movies = state.movies.filter(movie => movie.id !== action.payload.id);
+        });
     },
 });
 

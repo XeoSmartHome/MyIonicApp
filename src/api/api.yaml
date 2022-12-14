@@ -1,0 +1,207 @@
+openapi: "3.0.2"
+info:
+  title: API Title
+  version: "1.0"
+servers:
+  - url: http://localhost:5000
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+      required: [id, firstName, lastName, email]
+    Movie:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        year:
+          type: number
+        actors:
+          type: array
+          items:
+            type: string
+        location:
+          type: string
+        poster:
+          type: string
+          format: uri
+      required: [id, title, description, year, actors, location]
+
+paths:
+  /login:
+    post:
+      summary: Login
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required: [email, password]
+      responses:
+        200:
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                required: [token]
+        401:
+          description: Login failed
+
+  /users:
+    post:
+      operationId: createAccount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/User'
+                - type: object
+                  properties:
+                    password:
+                      type: string
+                  required: [password]
+      responses:
+        200:
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Bad request
+
+  /users/me:
+    get:
+      operationId: getUser
+      responses:
+        200:
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /movies:
+    get:
+      summary: Get movies paginated
+      operationId: getMovies
+      parameters:
+        - name: from
+          in: query
+          description: the id of the last movie in the previous page
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Movies
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  movies:
+                    type: array
+                    nullable: false
+                    items:
+                      $ref: '#/components/schemas/Movie'
+                  next:
+                    type: string
+                    format: uuid
+                required: [movies]
+        400:
+          description: Bad request
+
+    post:
+      operationId: createMovie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Movie'
+      responses:
+        200:
+          description: Movie created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        400:
+          description: Bad request
+  /movies/{id}:
+    put:
+      summary: Update a movie
+      operationId: updateMovie
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Movie'
+      responses:
+        200:
+          description: Movie updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        400:
+          description: Bad request
+        404:
+          description: Movie not found
+    delete:
+      summary: Delete a movie
+      operationId: deleteMovie
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Movie deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        400:
+            description: Bad request
+        404:
+          description: Movie not found

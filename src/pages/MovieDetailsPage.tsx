@@ -3,7 +3,7 @@ import React, {useCallback, useState} from "react";
 import {createMovieAction} from "../store/reducers/movies/actions";
 import {useAppDispatch} from "../store";
 
-const MovieEditor = () => {
+const MovieDetailsPage = () => {
     const dispatch = useAppDispatch();
     const [title, setTitle] = useState<string | undefined | number | null>("");
     const [description, setDescription] = useState<string | undefined | number | null>("");
@@ -11,13 +11,7 @@ const MovieEditor = () => {
     const [tags, setTags] = useState<string | undefined | number | null>("");
 
     const addMovie = useCallback(() => {
-        dispatch(createMovieAction({
-            id: `${Math.random()}`,
-            title: `${title}`,
-            description: `${description}`,
-            actors: actors?.toString().split(",") || [],
-            tags: tags?.toString().split(",") || [],
-        }));
+
     }, [dispatch, title, description, actors, tags]);
 
     return (
@@ -45,4 +39,4 @@ const MovieEditor = () => {
     )
 }
 
-export default MovieEditor;
+export default MovieDetailsPage;
