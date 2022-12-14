@@ -1,6 +1,6 @@
 import {apiClient} from "../../../api";
 import {createAsyncThunk} from "@reduxjs/toolkit";
-import {LoginRequest} from "../../../api/generated";
+import {CreateAccountRequest, LoginRequest} from "../../../api/generated";
 
 export const loginAction = createAsyncThunk(
     "user/login",
@@ -8,8 +8,8 @@ export const loginAction = createAsyncThunk(
         try {
             const response = await apiClient.login(arg)
             return response.data;
-        } catch (e) {
-            return thunkAPI.rejectWithValue(e);
+        } catch (e: any) {
+            return thunkAPI.rejectWithValue(e.message);
         }
     }
 )
@@ -20,20 +20,20 @@ export const getUserProfileAction = createAsyncThunk(
         try {
             const response = await apiClient.getUser();
             return response.data;
-        } catch (e) {
-            return thunkAPI.rejectWithValue(e);
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.message);
         }
     }
 )
 
 export const createAccountAction = createAsyncThunk(
     "user/create",
-    async (arg: undefined, thunkAPI) => {
+    async (arg: CreateAccountRequest, thunkAPI) => {
         try {
-            const response = await apiClient.createAccount()
+            const response = await apiClient.createAccount(arg)
             return response.data;
-        } catch (e) {
-            return thunkAPI.rejectWithValue(e);
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.message);
         }
     }
 );

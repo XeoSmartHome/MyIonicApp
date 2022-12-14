@@ -39,8 +39,11 @@ const App: React.FC = () => (
                 <Route exact path={"/movies"}>
                     <MoviesPage/>
                 </Route>
-                <Route path={"/movie-editor"}>
-                    <MovieDetailsPage/>
+                <Route exact path={"/movies/:id"}>
+                    <MovieDetailsPage scope={"EDIT"}/>
+                </Route>
+                <Route exact={true} path={"/movie-editor"}>
+                    <MovieDetailsPage scope={"CREATE"}/>
                 </Route>
             </IonReactRouter>
         </StoreProvider>

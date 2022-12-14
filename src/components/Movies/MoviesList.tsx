@@ -1,7 +1,7 @@
 import '../ExploreContainer.css';
 import React, {FC} from "react";
 import MovieCard from "./MovieCard";
-import {Movie} from "../../types/movie";
+import {Movie} from "../../api/generated";
 
 interface MoviesListProps {
     movies: Movie[]

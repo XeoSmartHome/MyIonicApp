@@ -4,6 +4,8 @@ import CTextInput from "../components/Common/CTextInput";
 import {useForm} from "react-hook-form";
 import {Link} from "react-router-dom";
 import {EMAIL_REGEX} from "../utils/regex";
+import {useAppDispatch} from "../store";
+import {createAccountAction} from "../store/reducers/user/actions";
 
 const FIRST_NAME_RULES = {required: {value: true, message: "First name is required"}};
 
@@ -18,6 +20,8 @@ const PASSWORD_RULES = {required: {value: true, message: "Password is required"}
 
 const CreateAccountPage: FC = () => {
     const [showToast] = useIonToast();
+    const dispatch = useAppDispatch();
+
     const {control, handleSubmit, getValues} = useForm({
         defaultValues: {
             firstName: "",
@@ -28,8 +32,21 @@ const CreateAccountPage: FC = () => {
     });
 
     const createAccount = useCallback(() => {
-        console.log(getValues());
-    }, [getValues]);
+        dispatch(createAccountAction({id: "", ...getValues()})).unwrap().then(() => {
+            showToast({
+                message: "Account created successfully",
+                duration: 2000,
+                color: "success",
+            });
+        }).catch((error) => {
+            showToast({
+                message: error,
+                duration: 2000,
+                color: "danger",
+            });
+        });
+    }, [dispatch, getValues, showToast]);
+
     return (
         <IonPage>
             <IonHeader>

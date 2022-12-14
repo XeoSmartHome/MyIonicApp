@@ -1,38 +1,78 @@
-import {IonButton, IonInput, IonItem, IonLabel, IonList, IonTextarea} from "@ionic/react";
-import React, {useCallback, useState} from "react";
+import {IonButton, IonDatetime, IonList, useIonToast} from "@ionic/react";
+import React, {FC, useCallback} from "react";
 import {createMovieAction} from "../store/reducers/movies/actions";
-import {useAppDispatch} from "../store";
+import {useAppDispatch, useAppSelector} from "../store";
+import {Controller, useForm} from "react-hook-form";
+import CTextInput from "../components/Common/CTextInput";
+import {selectMovieById, selectMovies} from "../store/reducers/movies/selectors";
+import {useHistory} from "react-router-dom";
 
-const MovieDetailsPage = () => {
+const GENERIC_RULES = {required: {value: true, message: "This field is required"}};
+
+interface MovieDetailsPageProps {
+    scope: "CREATE" | "EDIT";
+}
+const MovieDetailsPage: FC<MovieDetailsPageProps> = ({scope}) => {
+    const history = useHistory();
     const dispatch = useAppDispatch();
-    const [title, setTitle] = useState<string | undefined | number | null>("");
-    const [description, setDescription] = useState<string | undefined | number | null>("");
-    const [actors, setActors] = useState<string | undefined | number | null>("");
-    const [tags, setTags] = useState<string | undefined | number | null>("");
+    const movie = useAppSelector(selectMovieById(history.location.pathname.split("/").at(-1) || ""));
+    const [showToast] = useIonToast();
+
+    const {control, getValues, handleSubmit} = useForm({
+        defaultValues: scope === "CREATE" && ! movie ? {
+            title: "",
+            description: "",
+            year: 2022,
+            location: "acasa",
+            actors: [],
+            date: new Date().toLocaleDateString()
+        }: movie,
+    });
 
     const addMovie = useCallback(() => {
+        dispatch(createMovieAction({
+            ...getValues(),
+            id: '',
+        })).unwrap().then(
+            () => {
+                showToast({
+                    message: "Movie added successfully",
+                    duration: 2000,
+                    color: "success",
+                });
+                history.goBack();
+            }
+        ).catch((error) => {
+            showToast({
+                message: error,
+                duration: 2000,
+                color: "danger",
+            });
+        });
+    }, [dispatch, getValues, history, showToast]);
 
-    }, [dispatch, title, description, actors, tags]);
+    const updateMovie = useCallback(() => {
+
+    }, [dispatch, getValues, history, showToast]);
 
     return (
-        <IonList>
-            <IonItem>
-                <IonLabel>Title</IonLabel>
-                <IonInput placeholder={"Title"} onIonInput={e => setTitle(e.target.value)}/>
-            </IonItem>
-            <IonItem>
-                <IonLabel>Description</IonLabel>
-                <IonTextarea placeholder={"Description"} onIonChange={e => setDescription(e.target.value)}/>
-            </IonItem>
-            <IonItem>
-                <IonLabel>Actors</IonLabel>
-                <IonInput placeholder={"Actors"} onIonChange={e => setActors(e.target.value)}/>
-            </IonItem>
-            <IonItem>
-                <IonLabel>Tags</IonLabel>
-                <IonInput placeholder={"tags"} onIonChange={e => setTags(e.target.value)}/>
-            </IonItem>
-            <IonButton onClick={addMovie}>
+        <IonList className={"ion-padding"}>
+            <CTextInput name={"title"} control={control} rules={GENERIC_RULES} label={"Title"}/>
+            <CTextInput name={"description"} control={control} rules={GENERIC_RULES} label={"Description"}/>
+            <CTextInput name={"year"} type={"number"} control={control} rules={GENERIC_RULES} label={"Year"}/>
+            <Controller control={control} render={({field: {value, onChange, onBlur, ref}}) => {
+                return (
+                    <IonDatetime
+                        ref={ref}
+                        value={value}
+                        onIonChange={(event) => {
+                        onChange(event.detail.value);
+                    }}
+                        onIonBlur={onBlur}
+                    />
+                )
+            }} name={"date"}/>
+            <IonButton onClick={handleSubmit(addMovie)}>
                 Add movie
             </IonButton>
         </IonList>

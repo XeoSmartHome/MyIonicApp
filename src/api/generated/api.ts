@@ -154,12 +154,6 @@ export interface Movie {
     'year': number;
     /**
      * 
-     * @type {Array<string>}
-     * @memberof Movie
-     */
-    'actors': Array<string>;
-    /**
-     * 
      * @type {string}
      * @memberof Movie
      */
@@ -170,6 +164,12 @@ export interface Movie {
      * @memberof Movie
      */
     'poster'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Movie
+     */
+    'date': string;
 }
 /**
  * 
@@ -228,6 +228,9 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication ApiKeyAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "x-access-token", configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -260,6 +263,9 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication ApiKeyAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "x-access-token", configuration)
 
 
     
@@ -298,6 +304,9 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication ApiKeyAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "x-access-token", configuration)
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -328,6 +337,9 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication ApiKeyAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "x-access-token", configuration)
 
             if (from !== undefined) {
                 localVarQueryParameter['from'] = from;
@@ -362,6 +374,9 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication ApiKeyAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "x-access-token", configuration)
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -392,6 +407,9 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication ApiKeyAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "x-access-token", configuration)
 
 
     
@@ -430,6 +448,9 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication ApiKeyAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "x-access-token", configuration)
 
 
     

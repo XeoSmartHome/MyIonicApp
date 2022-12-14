@@ -17,11 +17,13 @@ const moviesSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder.addCase(getMoviesAction.fulfilled, (state, action) => {
+            console.log(action.payload)
             state.movies = action.payload.movies;
             state.nextMovieId = action.payload.next;
         });
 
         builder.addCase(createMovieAction.fulfilled, (state, action) => {
+            console.log("createMovieAction.fulfilled", action.payload)
             state.movies.push(action.payload)
         });
 

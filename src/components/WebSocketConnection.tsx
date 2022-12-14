@@ -1,13 +1,17 @@
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {useAppDispatch} from "../store";
 import {io} from "socket.io-client";
+import {getMoviesAction} from "../store/reducers/movies/actions";
 
 const socket = io("http://localhost:5000")
 
 export const WebSocketConnection = () => {
     const dispatch = useAppDispatch();
     const [isConnected, setIsConnected] = useState(socket.connected);
-    console.log("ok")
+
+    const reloadData = useCallback(() => {
+        dispatch(getMoviesAction({after: ""}));
+    }, [dispatch]);
 
     useEffect(() => {
         socket.on('connect', () => {
@@ -22,6 +26,7 @@ export const WebSocketConnection = () => {
 
         socket.on('message', () => {
             console.log("message")
+            reloadData();
         });
 
         return () => {
@@ -29,7 +34,7 @@ export const WebSocketConnection = () => {
             socket.off('disconnect');
             socket.off('pong');
         };
-    }, []);
+    }, [reloadData]);
 
     useEffect(() => {
         console.log("isConnected", isConnected)

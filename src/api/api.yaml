@@ -3,7 +3,7 @@ info:
   title: API Title
   version: "1.0"
 servers:
-  - url: http://localhost:5000
+  - url: http://localhost:5000/api
 components:
   schemas:
     User:
@@ -32,17 +32,22 @@ components:
           type: string
         year:
           type: number
-        actors:
-          type: array
-          items:
-            type: string
         location:
           type: string
         poster:
           type: string
           format: uri
-      required: [id, title, description, year, actors, location]
-
+        date:
+          type: string
+          format: date
+      required: [id, title, description, year, location, date]
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-access-token
+security:
+  - ApiKeyAuth: [ ]
 paths:
   /login:
     post:

@@ -1,3 +1,8 @@
-import {DefaultApi} from "./generated";
+import {Configuration, DefaultApi} from "./generated";
+import {getStore} from "../store/refference";
 
-export const apiClient = new DefaultApi();
+export const apiClient = new DefaultApi(new Configuration({
+    apiKey: () => {
+        return getStore()?.getState().user.accessToken;
+    }
+}));

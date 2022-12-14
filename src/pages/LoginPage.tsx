@@ -2,7 +2,7 @@ import {IonButton, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, useIonT
 import {FC, useCallback} from "react";
 import CTextInput from "../components/Common/CTextInput";
 import {useForm} from "react-hook-form";
-import {Link} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 import {EMAIL_REGEX} from "../utils/regex";
 import {useAppDispatch} from "../store";
 import {loginAction} from "../store/reducers/user/actions";
@@ -17,6 +17,7 @@ const PASSWORD_RULES = {required: {value: true, message: "Password is required"}
 const LoginPage: FC = () => {
     const [showToast] = useIonToast();
     const dispatch = useAppDispatch();
+    const history = useHistory();
 
     const {control, handleSubmit, getValues} = useForm({
         defaultValues: {
@@ -31,6 +32,7 @@ const LoginPage: FC = () => {
                 message: "Login success",
                 duration: 2000
             });
+            history.replace("/movies");
         }).catch((error) => {
             showToast({
                 message: error.message,

@@ -1,11 +1,12 @@
 import {configureStore} from "@reduxjs/toolkit";
-import {Provider, useDispatch} from "react-redux";
+import {Provider, TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
 import moviesSlice, {MoviesState} from "./reducers/movies/slice";
 import {FC, ReactNode} from "react";
 import userSlice, {UserState} from "./reducers/user/slice";
 import {FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE} from 'redux-persist';
 import {PersistGate} from 'redux-persist/integration/react';
 import CapacitorStorage from 'redux-persist-capacitor';
+import {setStore} from "./refference";
 
 
 const store = configureStore({
@@ -36,8 +37,11 @@ const store = configureStore({
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
 export const useAppDispatch: () => AppDispatch = useDispatch
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 const persistor = persistStore(store);
+
+setStore(store);
 
 export const StoreProvider: FC<{ children: ReactNode }> = ({children}) => {
     return (

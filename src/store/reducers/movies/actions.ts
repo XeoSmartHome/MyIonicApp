@@ -9,7 +9,7 @@ export const getMoviesAction = createAsyncThunk(
             const response = await apiClient.getMovies(arg.after);
             return response.data;
         } catch (error: any) {
-            return thunkAPI.rejectWithValue(error.response.data);
+            return thunkAPI.rejectWithValue(error.message);
         }
     },
 );
@@ -20,8 +20,8 @@ export const createMovieAction = createAsyncThunk(
         try {
             const response = await apiClient.createMovie(arg);
             return response.data;
-        } catch (e) {
-            return thunkAPI.rejectWithValue(e);
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.message);
         }
     }
 )
@@ -32,8 +32,8 @@ export const updateMovieAction = createAsyncThunk(
         try {
             const response = await apiClient.updateMovie(arg.id, arg);
             return response.data;
-        } catch (e) {
-            return thunkAPI.rejectWithValue(e);
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.message);
         }
     }
 )
@@ -44,8 +44,8 @@ export const deleteMovieAction = createAsyncThunk(
         try {
             const response = await apiClient.deleteMovie(arg.id);
             return response.data;
-        } catch (e) {
-            return thunkAPI.rejectWithValue(e);
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.message);
         }
     }
 )
