@@ -1,6 +1,6 @@
 import {IonButton, IonDatetime, IonList, useIonToast} from "@ionic/react";
 import React, {FC, useCallback} from "react";
-import {createMovieAction, updateMovieAction} from "../store/reducers/movies/actions";
+import {createMovieAction, deleteMovieAction, updateMovieAction} from "../store/reducers/movies/actions";
 import {useAppDispatch, useAppSelector} from "../store";
 import {Controller, useForm} from "react-hook-form";
 import CTextInput from "../components/Common/CTextInput";
@@ -74,6 +74,24 @@ const MovieDetailsPage: FC<MovieDetailsPageProps> = ({scope}) => {
         });
     }, [dispatch, getValues, history, movie, showToast]);
 
+    const deleteMovie = useCallback(() => {
+        dispatch(deleteMovieAction(movie!)).unwrap().then(
+            () => {
+                showToast({
+                    message: "Movie deleted successfully",
+                    duration: 2000,
+                    color: "success",
+                });
+                history.goBack();
+            }).catch((error) => {
+            showToast({
+                message: error,
+                duration: 2000,
+                color: "danger",
+            });
+        })
+    }, [dispatch, history, movie, showToast]);
+
     return (
         <IonList className={"ion-padding"}>
             <CTextInput name={"title"} control={control} rules={GENERIC_RULES} label={"Title"}/>
@@ -91,9 +109,16 @@ const MovieDetailsPage: FC<MovieDetailsPageProps> = ({scope}) => {
                     />
                 )
             }} name={"date"}/>
-            <IonButton onClick={handleSubmit(scope === "CREATE" ? addMovie: updateMovie)}>
-                Add movie
+            <IonButton onClick={handleSubmit(scope === "CREATE" ? addMovie : updateMovie)}>
+                SAVE
             </IonButton>
+            {
+                scope === "EDIT" && (
+                    <IonButton onClick={deleteMovie} color={"danger"}>
+                        DELETE
+                    </IonButton>
+                )
+            }
         </IonList>
     )
 }

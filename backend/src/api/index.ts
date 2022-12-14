@@ -3,11 +3,19 @@ import {User} from "../database/user";
 import {createHash} from "crypto";
 import {Movie} from "../database/movie";
 import {sign, verify} from "jsonwebtoken";
+import {getIo} from "../connections";
 
-const APP_SECRET = "secret1234";
+export const APP_SECRET = "secret1234";
 const generateJwtToken = (userId: string) => {
     return sign({userId}, APP_SECRET, {expiresIn: "10d"});
 }
+
+const notifyUser = (userId: string) => {
+    const io: any = getIo();
+    if(io) {
+        io.to(userId).emit("update");
+    }
+};
 
 const mapMovie = (movie: any) => {
     return {
@@ -112,6 +120,7 @@ apiRouter.post("/movies", authMiddleware, (req, res) => {
 
     movie.save().then((movie) => {
         res.send(mapMovie(movie));
+        notifyUser(userId);
     }).catch((error) => {
         console.log(error);
         res.sendStatus(500);
@@ -122,7 +131,6 @@ apiRouter.put("/movies/:movieId", authMiddleware, (req, res) => {
     const {userId} = res.locals;
 
     const {title, description, year, date, location} = req.body;
-    console.log("req.body", req.body);
 
     if (!title || !description || !year || !date || !location) {
         console.log("error", "Missing required fields");
@@ -140,6 +148,22 @@ apiRouter.put("/movies/:movieId", authMiddleware, (req, res) => {
         location,
     }).then((movie) => {
         res.send(mapMovie(movie));
+        notifyUser(userId);
+    }).catch((error) => {
+        console.log(error);
+        res.sendStatus(500);
+    });
+});
+
+apiRouter.delete("/movies/:movieId", authMiddleware, (req, res) => {
+    const {userId} = res.locals;
+
+    Movie.deleteOne({
+        userId,
+        _id: req.params.movieId,
+    }).then((movie) => {
+        res.send(mapMovie(movie));
+        notifyUser(userId);
     }).catch((error) => {
         console.log(error);
         res.sendStatus(500);
