@@ -3,6 +3,7 @@ package main
 import (
 	"PPD-Server-Client/Const"
 	"PPD-Server-Client/Models"
+	"PPD-Server-Client/utils"
 	"encoding/json"
 	"fmt"
 	"github.com/mitchellh/mapstructure"
@@ -160,6 +161,28 @@ func handleReservation(conn net.Conn, db *mongo.Database, reservationRequest Mod
 
 	if treatment == nil {
 		fmt.Println("Treatment not found")
+		return
+	}
+
+	if reservationRequest.Date+treatment.Duration > 8*60 {
+		//fmt.Println("Reservation not available")
+		response := Models.ReservationResponse{
+			Success: false,
+			Message: "Programare nereusita!",
+		}
+
+		responseBytes, err := json.Marshal(response)
+
+		if err != nil {
+			fmt.Println("Error marshalling response", err)
+			return
+		}
+
+		_, err = conn.Write(responseBytes)
+		if err != nil {
+			log.Fatal("Error writing:", err)
+			return
+		}
 		return
 	}
 
@@ -343,7 +366,29 @@ func verifyReservations(db *mongo.Database, file *os.File) {
 	verificationMutex.Lock()
 
 	for _, location := range Const.Locations {
+		paymentsFilter := bson.M{
+			"locationId": location.Id,
+		}
+
+		paymentsCursor, err := db.Collection("Payments").Find(nil, paymentsFilter)
+
+		if err != nil {
+			fmt.Println("Error finding payments", err)
+			verificationMutex.Unlock()
+			continue
+		}
+
+		var payments []Models.Payment
+		err = paymentsCursor.All(nil, &payments)
+		if err != nil {
+			fmt.Println("Error decoding payments", err)
+			verificationMutex.Unlock()
+			return
+		}
+
 		noConflicts := true
+		var unpaidReservations []Models.Reservation
+		var treatmentReservationsDetails []string
 
 		for _, treatment := range location.Treatments {
 
@@ -384,28 +429,22 @@ func verifyReservations(db *mongo.Database, file *os.File) {
 				}
 
 				//fmt.Println(concurrentReservations)
+
+				isPaid := false
+				for _, payment := range payments {
+					if payment.CNP == reservation.CNP {
+						isPaid = true
+						break
+					}
+				}
+
+				if !isPaid {
+					unpaidReservations = append(unpaidReservations, reservation)
+				}
+
+				treatmentReservationsDetails = append(treatmentReservationsDetails, fmt.Sprintf("Treatment: %d: %d/%d Time interval %s-%s\n", treatment.Id, concurrentReservations, treatment.Capacity, utils.FormatTime(reservation.TreatmentStart), utils.FormatTime(reservation.TreatmentEnd)))
 			}
 
-		}
-
-		paymentsFilter := bson.M{
-			"locationId": location.Id,
-		}
-
-		paymentsCursor, err := db.Collection("Payments").Find(nil, paymentsFilter)
-
-		if err != nil {
-			fmt.Println("Error finding payments", err)
-			verificationMutex.Unlock()
-			continue
-		}
-
-		var payments []Models.Payment
-		err = paymentsCursor.All(nil, &payments)
-		if err != nil {
-			fmt.Println("Error decoding payments", err)
-			verificationMutex.Unlock()
-			return
 		}
 
 		sold := 0
@@ -418,15 +457,20 @@ func verifyReservations(db *mongo.Database, file *os.File) {
 		if !noConflicts {
 			conflicts = "Detected reservation overflow"
 		}
-		row := fmt.Sprintf("Time: %s, Location: '%s', Conflicts: '%s', Sold: %d,\n", time.Now().String(), location.Name, conflicts, sold)
-
-		_, err = file.WriteString(row)
-		if err != nil {
-			fmt.Println("Error writing to file", err)
-			return
+		_, _ = file.WriteString(fmt.Sprintf("Time: %s, Location: '%s', Conflicts: '%s', Sold: %d,\n", time.Now().String(), location.Name, conflicts, sold))
+		_, _ = file.WriteString("Unpaid reservations:\n")
+		for _, unpaidReservation := range unpaidReservations {
+			_, _ = file.WriteString(fmt.Sprintf("CNP: %s, Treatment: %d, Start: %d, End: %d\n", unpaidReservation.CNP, unpaidReservation.TreatmentId, unpaidReservation.TreatmentStart, unpaidReservation.TreatmentEnd))
 		}
+		for _, treatmentReservationsDetail := range treatmentReservationsDetails {
+			_, _ = file.WriteString(treatmentReservationsDetail)
+		}
+		_, _ = file.WriteString("\n")
 
 	}
+
+	_, _ = file.WriteString("----------------------------------------\n")
+
 	verificationMutex.Unlock()
 
 }

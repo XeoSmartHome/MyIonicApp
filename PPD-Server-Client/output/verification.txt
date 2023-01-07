@@ -1,0 +1,174 @@
+Time: 2023-01-07 14:57:06.0187356 +0200 EET m=+5.007308701, Location: 'Location 1', Conflicts: 'No conflicts detected', Sold: 1,
+Unpaid reservations:
+Treatment: 11: 1/2 Time interval 16:20-18:00
+
+Time: 2023-01-07 14:57:06.020542 +0200 EET m=+5.009115101, Location: 'Location 2', Conflicts: 'No conflicts detected', Sold: 1,
+Unpaid reservations:
+Treatment: 22: 1/5 Time interval 14:30-16:10
+
+----------------------------------------
+Time: 2023-01-07 14:57:11.0230683 +0200 EET m=+10.011641401, Location: 'Location 1', Conflicts: 'No conflicts detected', Sold: 2,
+Unpaid reservations:
+Treatment: 11: 1/2 Time interval 16:20-18:00
+Treatment: 12: 1/2 Time interval 11:23-13:03
+
+Time: 2023-01-07 14:57:11.0238854 +0200 EET m=+10.012458501, Location: 'Location 2', Conflicts: 'No conflicts detected', Sold: 1,
+Unpaid reservations:
+Treatment: 22: 1/5 Time interval 14:30-16:10
+
+----------------------------------------
+Time: 2023-01-07 14:57:16.0384817 +0200 EET m=+15.027054801, Location: 'Location 1', Conflicts: 'No conflicts detected', Sold: 3,
+Unpaid reservations:
+Treatment: 11: 1/2 Time interval 13:44-15:24
+Treatment: 11: 1/2 Time interval 16:20-18:00
+Treatment: 12: 1/2 Time interval 11:23-13:03
+
+Time: 2023-01-07 14:57:16.0395435 +0200 EET m=+15.028116601, Location: 'Location 2', Conflicts: 'No conflicts detected', Sold: 1,
+Unpaid reservations:
+CNP: 227449757668, Treatment: 22, Start: 141, End: 241
+Treatment: 22: 1/5 Time interval 12:21-14:01
+Treatment: 22: 1/5 Time interval 14:30-16:10
+
+----------------------------------------
+Time: 2023-01-07 14:57:21.0517567 +0200 EET m=+20.040329801, Location: 'Location 1', Conflicts: 'No conflicts detected', Sold: 3,
+Unpaid reservations:
+Treatment: 11: 1/2 Time interval 13:44-15:24
+Treatment: 11: 1/2 Time interval 16:20-18:00
+Treatment: 12: 1/2 Time interval 11:23-13:03
+
+Time: 2023-01-07 14:57:21.052951 +0200 EET m=+20.041524101, Location: 'Location 2', Conflicts: 'No conflicts detected', Sold: 3,
+Unpaid reservations:
+Treatment: 21: 1/2 Time interval 10:21-12:01
+Treatment: 22: 1/5 Time interval 12:21-14:01
+Treatment: 22: 1/5 Time interval 14:30-16:10
+
+----------------------------------------
+Time: 2023-01-07 14:57:26.0666226 +0200 EET m=+25.055195701, Location: 'Location 1', Conflicts: 'No conflicts detected', Sold: 3,
+Unpaid reservations:
+Treatment: 11: 1/2 Time interval 13:44-15:24
+Treatment: 11: 1/2 Time interval 16:20-18:00
+Treatment: 12: 1/2 Time interval 11:23-13:03
+
+Time: 2023-01-07 14:57:26.0673299 +0200 EET m=+25.055903001, Location: 'Location 2', Conflicts: 'No conflicts detected', Sold: 3,
+Unpaid reservations:
+CNP: 557388445212, Treatment: 22, Start: 261, End: 361
+Treatment: 21: 1/2 Time interval 10:21-12:01
+Treatment: 22: 1/5 Time interval 12:21-14:01
+Treatment: 22: 2/5 Time interval 14:21-16:01
+Treatment: 22: 1/5 Time interval 14:30-16:10
+
+----------------------------------------
+Time: 2023-01-07 14:57:31.0811242 +0200 EET m=+30.069697301, Location: 'Location 1', Conflicts: 'No conflicts detected', Sold: 3,
+Unpaid reservations:
+Treatment: 11: 1/2 Time interval 13:44-15:24
+Treatment: 11: 1/2 Time interval 16:20-18:00
+Treatment: 12: 1/2 Time interval 11:23-13:03
+
+Time: 2023-01-07 14:57:31.0821736 +0200 EET m=+30.070746701, Location: 'Location 2', Conflicts: 'No conflicts detected', Sold: 4,
+Unpaid reservations:
+Treatment: 21: 1/2 Time interval 10:21-12:01
+Treatment: 22: 1/5 Time interval 12:21-14:01
+Treatment: 22: 2/5 Time interval 14:21-16:01
+Treatment: 22: 1/5 Time interval 14:30-16:10
+
+----------------------------------------
+Time: 2023-01-07 14:57:36.0966604 +0200 EET m=+35.085233501, Location: 'Location 1', Conflicts: 'No conflicts detected', Sold: 3,
+Unpaid reservations:
+Treatment: 11: 1/2 Time interval 13:44-15:24
+Treatment: 11: 1/2 Time interval 16:20-18:00
+Treatment: 12: 1/2 Time interval 11:23-13:03
+
+Time: 2023-01-07 14:57:36.0976233 +0200 EET m=+35.086196401, Location: 'Location 2', Conflicts: 'No conflicts detected', Sold: 4,
+Unpaid reservations:
+Treatment: 21: 1/2 Time interval 10:21-12:01
+Treatment: 22: 1/5 Time interval 12:21-14:01
+Treatment: 22: 2/5 Time interval 14:21-16:01
+Treatment: 22: 1/5 Time interval 14:30-16:10
+
+----------------------------------------
+Time: 2023-01-07 14:57:41.1110811 +0200 EET m=+40.099654201, Location: 'Location 1', Conflicts: 'No conflicts detected', Sold: 3,
+Unpaid reservations:
+Treatment: 11: 1/2 Time interval 13:44-15:24
+Treatment: 11: 1/2 Time interval 16:20-18:00
+Treatment: 12: 1/2 Time interval 11:23-13:03
+
+Time: 2023-01-07 14:57:41.1127727 +0200 EET m=+40.101345801, Location: 'Location 2', Conflicts: 'No conflicts detected', Sold: 6,
+Unpaid reservations:
+Treatment: 21: 1/2 Time interval 10:21-12:01
+Treatment: 22: 1/5 Time interval 12:21-14:01
+Treatment: 22: 4/5 Time interval 14:21-16:01
+Treatment: 22: 3/5 Time interval 14:30-16:10
+Treatment: 22: 2/5 Time interval 15:09-16:49
+Treatment: 22: 1/5 Time interval 15:51-17:31
+
+----------------------------------------
+Time: 2023-01-07 14:57:46.1275345 +0200 EET m=+45.116107601, Location: 'Location 1', Conflicts: 'No conflicts detected', Sold: 3,
+Unpaid reservations:
+Treatment: 11: 1/2 Time interval 13:44-15:24
+Treatment: 11: 1/2 Time interval 16:20-18:00
+Treatment: 12: 1/2 Time interval 11:23-13:03
+
+Time: 2023-01-07 14:57:46.1287422 +0200 EET m=+45.117315301, Location: 'Location 2', Conflicts: 'No conflicts detected', Sold: 6,
+Unpaid reservations:
+Treatment: 21: 1/2 Time interval 10:21-12:01
+Treatment: 22: 1/5 Time interval 12:21-14:01
+Treatment: 22: 4/5 Time interval 14:21-16:01
+Treatment: 22: 3/5 Time interval 14:30-16:10
+Treatment: 22: 2/5 Time interval 15:09-16:49
+Treatment: 22: 1/5 Time interval 15:51-17:31
+
+----------------------------------------
+Time: 2023-01-07 14:57:51.1339803 +0200 EET m=+50.122553401, Location: 'Location 1', Conflicts: 'No conflicts detected', Sold: 3,
+Unpaid reservations:
+Treatment: 11: 1/2 Time interval 13:44-15:24
+Treatment: 11: 1/2 Time interval 16:20-18:00
+Treatment: 12: 1/2 Time interval 11:23-13:03
+
+Time: 2023-01-07 14:57:51.1369728 +0200 EET m=+50.125545901, Location: 'Location 2', Conflicts: 'No conflicts detected', Sold: 7,
+Unpaid reservations:
+Treatment: 21: 1/2 Time interval 10:21-12:01
+Treatment: 22: 1/5 Time interval 10:38-12:18
+Treatment: 22: 1/5 Time interval 12:21-14:01
+Treatment: 22: 4/5 Time interval 14:21-16:01
+Treatment: 22: 3/5 Time interval 14:30-16:10
+Treatment: 22: 2/5 Time interval 15:09-16:49
+Treatment: 22: 1/5 Time interval 15:51-17:31
+
+----------------------------------------
+Time: 2023-01-07 14:57:56.1395183 +0200 EET m=+55.128091401, Location: 'Location 1', Conflicts: 'No conflicts detected', Sold: 3,
+Unpaid reservations:
+CNP: 451427659844, Treatment: 12, Start: 150, End: 250
+Treatment: 11: 1/2 Time interval 13:44-15:24
+Treatment: 11: 1/2 Time interval 16:20-18:00
+Treatment: 12: 2/2 Time interval 11:23-13:03
+Treatment: 12: 1/2 Time interval 12:30-14:10
+
+Time: 2023-01-07 14:57:56.1401912 +0200 EET m=+55.128764301, Location: 'Location 2', Conflicts: 'No conflicts detected', Sold: 7,
+Unpaid reservations:
+Treatment: 21: 1/2 Time interval 10:21-12:01
+Treatment: 22: 1/5 Time interval 10:38-12:18
+Treatment: 22: 1/5 Time interval 12:21-14:01
+Treatment: 22: 4/5 Time interval 14:21-16:01
+Treatment: 22: 3/5 Time interval 14:30-16:10
+Treatment: 22: 2/5 Time interval 15:09-16:49
+Treatment: 22: 1/5 Time interval 15:51-17:31
+
+----------------------------------------
+Time: 2023-01-07 14:58:01.1521337 +0200 EET m=+60.140706801, Location: 'Location 1', Conflicts: 'No conflicts detected', Sold: 4,
+Unpaid reservations:
+Treatment: 11: 2/2 Time interval 13:44-15:24
+Treatment: 11: 1/2 Time interval 14:00-15:40
+Treatment: 11: 1/2 Time interval 16:20-18:00
+Treatment: 12: 1/2 Time interval 11:23-13:03
+
+Time: 2023-01-07 14:58:01.1533448 +0200 EET m=+60.141917901, Location: 'Location 2', Conflicts: 'No conflicts detected', Sold: 7,
+Unpaid reservations:
+Treatment: 21: 1/2 Time interval 10:21-12:01
+Treatment: 22: 1/5 Time interval 10:38-12:18
+Treatment: 22: 1/5 Time interval 12:21-14:01
+Treatment: 22: 4/5 Time interval 14:21-16:01
+Treatment: 22: 3/5 Time interval 14:30-16:10
+Treatment: 22: 2/5 Time interval 15:09-16:49
+Treatment: 22: 1/5 Time interval 15:51-17:31
+
+----------------------------------------

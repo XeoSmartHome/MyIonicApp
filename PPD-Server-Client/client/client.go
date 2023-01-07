@@ -19,7 +19,7 @@ func main() {
 	random := rand.New(source)
 
 	for {
-		time.Sleep(2 * time.Millisecond)
+		time.Sleep(2 * time.Second)
 
 		location := Const.Locations[random.Intn(len(Const.Locations))]
 		locationId := location.Id
@@ -36,7 +36,7 @@ func main() {
 			continue
 		}
 
-		time.Sleep(1 * time.Millisecond)
+		time.Sleep(1 * time.Second)
 
 		payReservation(locationId, treatmentId, clientCNP, cost)
 
@@ -44,7 +44,7 @@ func main() {
 			continue
 		}
 
-		time.Sleep(1 * time.Millisecond)
+		time.Sleep(1 * time.Second)
 
 		cancelReservation(locationId, treatmentId, clientCNP, cost)
 	}
