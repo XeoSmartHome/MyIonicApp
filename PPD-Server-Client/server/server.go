@@ -275,15 +275,7 @@ func handlePayment(conn net.Conn, db *mongo.Database, paymentRequest Models.Paym
 func handleCancelation(conn net.Conn, db *mongo.Database, cancelationRequest Models.CancelationRequest) {
 	fmt.Println("Cancelation request", cancelationRequest)
 
-	_, err := db.Collection("Payments").DeleteOne(nil, bson.M{
-		"cnp": cancelationRequest.ClientCNP,
-	})
-	if err != nil {
-		fmt.Println("Error deleting payment", err)
-		return
-	}
-
-	_, err = db.Collection("Reservations").DeleteOne(nil, bson.M{
+	_, err := db.Collection("Reservations").DeleteOne(nil, bson.M{
 		"cnp": cancelationRequest.ClientCNP,
 	})
 
@@ -292,5 +284,17 @@ func handleCancelation(conn net.Conn, db *mongo.Database, cancelationRequest Mod
 		return
 	}
 
-	fmt.Println("Deleted reservation and payment for CNP", cancelationRequest.ClientCNP)
+	insertOneResult, err := db.Collection("Payments").InsertOne(nil, Models.Payment{
+		Id:     primitive.NilObjectID,
+		Date:   primitive.NewDateTimeFromTime(time.Now()),
+		CNP:    cancelationRequest.ClientCNP,
+		Amount: -cancelationRequest.Amount,
+	})
+
+	if err != nil {
+		fmt.Println("Error inserting payment", err)
+		return
+	}
+
+	fmt.Println("Deleted reservation and inserted payment with id", insertOneResult.InsertedID)
 }
