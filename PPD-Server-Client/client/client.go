@@ -19,7 +19,7 @@ func main() {
 	random := rand.New(source)
 
 	for {
-		time.Sleep(2 * time.Second)
+		time.Sleep(2 * time.Millisecond)
 
 		location := Const.Locations[random.Intn(len(Const.Locations))]
 		locationId := location.Id
@@ -36,17 +36,17 @@ func main() {
 			continue
 		}
 
-		time.Sleep(1 * time.Second)
+		time.Sleep(1 * time.Millisecond)
 
-		payReservation(clientCNP, cost)
+		payReservation(locationId, treatmentId, clientCNP, cost)
 
 		if !willCancel {
 			continue
 		}
 
-		time.Sleep(1 * time.Second)
+		time.Sleep(1 * time.Millisecond)
 
-		cancelReservation(clientCNP, cost)
+		cancelReservation(locationId, treatmentId, clientCNP, cost)
 	}
 
 }
@@ -108,7 +108,7 @@ func makeReservation(locationId int, treatmentId int, date int, clientName strin
 	return response.Cost
 }
 
-func payReservation(clientCNP string, amount int) bool {
+func payReservation(locationId int, treatmentId int, clientCNP string, amount int) bool {
 	fmt.Println("Paying reservation")
 
 	conn, err := net.Dial("tcp", ServerUrl)
@@ -118,8 +118,10 @@ func payReservation(clientCNP string, amount int) bool {
 	}
 
 	paymentRequest := Models.PaymentRequest{
-		ClientCNP: clientCNP,
-		Amount:    amount,
+		ClientCNP:   clientCNP,
+		Amount:      amount,
+		LocationId:  locationId,
+		TreatmentId: treatmentId,
 	}
 
 	genericRequest := Models.GenericRequest{
@@ -144,7 +146,7 @@ func payReservation(clientCNP string, amount int) bool {
 	return true
 }
 
-func cancelReservation(clientCNP string, amount int) bool {
+func cancelReservation(locationId int, treatmentId int, clientCNP string, amount int) bool {
 	fmt.Println("Cancelling reservation")
 
 	conn, err := net.Dial("tcp", ServerUrl)
@@ -154,8 +156,10 @@ func cancelReservation(clientCNP string, amount int) bool {
 	}
 
 	cancelRequest := Models.CancelationRequest{
-		ClientCNP: clientCNP,
-		Amount:    amount,
+		ClientCNP:   clientCNP,
+		Amount:      amount,
+		LocationId:  locationId,
+		TreatmentId: treatmentId,
 	}
 
 	genericRequest := Models.GenericRequest{

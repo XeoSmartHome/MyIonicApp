@@ -12,6 +12,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net"
+	"os"
+	"sync"
 	"time"
 )
 
@@ -29,6 +31,9 @@ func ConnectToDatabase(connectionUri string) *mongo.Database {
 	return client.Database("PPD")
 }
 
+var reservationMutex = sync.Mutex{}
+var verificationMutex = sync.Mutex{}
+
 func main() {
 	waitChan := make(chan Job)
 	count := 0
@@ -41,9 +46,11 @@ func main() {
 	}
 	defer l.Close()
 
-	//for i := 0; i < ThreadsCount-1; i++ {
-	go startThread(1, waitChan, db)
-	//}
+	for i := 0; i < ThreadsCount-1; i++ {
+		go startThread(i, waitChan, db)
+	}
+
+	startVerificationThread(db)
 
 	for {
 		count++
@@ -83,7 +90,7 @@ func getTreatmentById(location *Models.Location, treatmentId int) *Models.Treatm
 }
 
 func handleConnection(threadId int, job Job, db *mongo.Database) {
-	fmt.Println("Thread", threadId, "handling connection")
+	//fmt.Println("Thread", threadId, "handling connection")
 
 	conn := job.Conn
 
@@ -106,7 +113,7 @@ func handleConnection(threadId int, job Job, db *mongo.Database) {
 		return
 	}
 
-	fmt.Println("Request", genericRequest)
+	//fmt.Println("Request", genericRequest)
 	switch genericRequest.Event {
 	case "reservation":
 		//reservationRequest := genericRequest.Data.(Models.ReservationRequest)
@@ -159,6 +166,8 @@ func handleReservation(conn net.Conn, db *mongo.Database, reservationRequest Mod
 	startCAndVremSaPunem := reservationRequest.Date
 	endCanVremSaPunem := reservationRequest.Date + treatment.Duration
 
+	reservationMutex.Lock()
+
 	filter := bson.M{
 		"locationId":  reservationRequest.LocationId,
 		"treatmentId": reservationRequest.TreatmentId,
@@ -180,12 +189,14 @@ func handleReservation(conn net.Conn, db *mongo.Database, reservationRequest Mod
 	cursor, err := db.Collection("Reservations").Find(nil, filter)
 	if err != nil {
 		fmt.Println("Error finding reservations", err)
+		reservationMutex.Unlock()
 		return
 	}
 
 	var reservations []Models.Reservation
 	if err = cursor.All(nil, &reservations); err != nil {
 		fmt.Println("Error decoding reservations", err)
+		reservationMutex.Unlock()
 		return
 	}
 
@@ -203,19 +214,21 @@ func handleReservation(conn net.Conn, db *mongo.Database, reservationRequest Mod
 
 		if err != nil {
 			fmt.Println("Error marshalling response", err)
+			reservationMutex.Unlock()
 			return
 		}
 
 		_, err = conn.Write(responseBytes)
 		if err != nil {
 			log.Fatal("Error writing:", err)
+			reservationMutex.Unlock()
 			return
 		}
-
+		reservationMutex.Unlock()
 		return
 	}
 
-	insertResult, err := db.Collection("Reservations").InsertOne(nil, Models.Reservation{
+	_, err = db.Collection("Reservations").InsertOne(nil, Models.Reservation{
 		Id:             primitive.NilObjectID,
 		Client:         reservationRequest.ClientName,
 		CNP:            reservationRequest.ClientCNP,
@@ -228,10 +241,13 @@ func handleReservation(conn net.Conn, db *mongo.Database, reservationRequest Mod
 
 	if err != nil {
 		//fmt.Println("Error inserting reservation", err)
+		reservationMutex.Unlock()
 		return
 	}
 
-	fmt.Println("Inserted reservation with id", insertResult.InsertedID)
+	reservationMutex.Unlock()
+
+	//fmt.Println("Inserted reservation with id", insertResult.InsertedID)
 
 	response := Models.ReservationResponse{
 		Success: true,
@@ -256,11 +272,13 @@ func handleReservation(conn net.Conn, db *mongo.Database, reservationRequest Mod
 func handlePayment(conn net.Conn, db *mongo.Database, paymentRequest Models.PaymentRequest) {
 	fmt.Println("Payment request", paymentRequest)
 
-	insertOneResult, err := db.Collection("Payments").InsertOne(nil, Models.Payment{
-		Id:     primitive.NilObjectID,
-		Date:   primitive.NewDateTimeFromTime(time.Now()),
-		CNP:    paymentRequest.ClientCNP,
-		Amount: paymentRequest.Amount,
+	_, err := db.Collection("Payments").InsertOne(nil, Models.Payment{
+		Id:          primitive.NilObjectID,
+		Date:        primitive.NewDateTimeFromTime(time.Now()),
+		CNP:         paymentRequest.ClientCNP,
+		Amount:      paymentRequest.Amount,
+		LocationId:  paymentRequest.LocationId,
+		TreatmentId: paymentRequest.TreatmentId,
 	})
 
 	if err != nil {
@@ -268,12 +286,12 @@ func handlePayment(conn net.Conn, db *mongo.Database, paymentRequest Models.Paym
 		return
 	}
 
-	fmt.Println("Inserted payment with id", insertOneResult.InsertedID)
-
+	//fmt.Println("Inserted payment with id", insertOneResult.InsertedID)
 }
 
 func handleCancelation(conn net.Conn, db *mongo.Database, cancelationRequest Models.CancelationRequest) {
 	fmt.Println("Cancelation request", cancelationRequest)
+	verificationMutex.Lock()
 
 	_, err := db.Collection("Reservations").DeleteOne(nil, bson.M{
 		"cnp": cancelationRequest.ClientCNP,
@@ -284,17 +302,131 @@ func handleCancelation(conn net.Conn, db *mongo.Database, cancelationRequest Mod
 		return
 	}
 
-	insertOneResult, err := db.Collection("Payments").InsertOne(nil, Models.Payment{
-		Id:     primitive.NilObjectID,
-		Date:   primitive.NewDateTimeFromTime(time.Now()),
-		CNP:    cancelationRequest.ClientCNP,
-		Amount: -cancelationRequest.Amount,
+	_, err = db.Collection("Payments").InsertOne(nil, Models.Payment{
+		Id:          primitive.NilObjectID,
+		Date:        primitive.NewDateTimeFromTime(time.Now()),
+		CNP:         cancelationRequest.ClientCNP,
+		Amount:      -cancelationRequest.Amount,
+		LocationId:  cancelationRequest.LocationId,
+		TreatmentId: cancelationRequest.TreatmentId,
 	})
+
+	verificationMutex.Unlock()
 
 	if err != nil {
 		fmt.Println("Error inserting payment", err)
 		return
 	}
 
-	fmt.Println("Deleted reservation and inserted payment with id", insertOneResult.InsertedID)
+	//fmt.Println("Deleted reservation and inserted payment with id", insertOneResult.InsertedID)
+}
+
+func startVerificationThread(db *mongo.Database) {
+	file, err := os.Create("output/verification.txt")
+
+	if err != nil {
+		fmt.Println("Error creating file", err)
+		return
+	}
+
+	go func() {
+		for {
+			time.Sleep(5 * time.Second)
+			verifyReservations(db, file)
+		}
+	}()
+}
+
+func verifyReservations(db *mongo.Database, file *os.File) {
+
+	fmt.Println("Verifying reservations")
+	verificationMutex.Lock()
+
+	for _, location := range Const.Locations {
+		noConflicts := true
+
+		for _, treatment := range location.Treatments {
+
+			filter := bson.M{
+				"locationId":  location.Id,
+				"treatmentId": treatment.Id,
+			}
+
+			opt := options.Find().SetSort(bson.D{{"treatmentStart", 1}})
+
+			cursor, err := db.Collection("Reservations").Find(nil, filter, opt)
+
+			if err != nil {
+				fmt.Println("Error finding reservations", err)
+				verificationMutex.Unlock()
+				continue
+			}
+
+			var reservations []Models.Reservation
+			err = cursor.All(nil, &reservations)
+			if err != nil {
+				fmt.Println("Error decoding reservations", err)
+				verificationMutex.Unlock()
+				return
+			}
+
+			for _, reservation := range reservations {
+				concurrentReservations := 0
+				for _, nextReservation := range reservations {
+					if nextReservation.TreatmentStart >= reservation.TreatmentStart && nextReservation.TreatmentStart <= reservation.TreatmentEnd {
+						concurrentReservations++
+					}
+				}
+
+				if concurrentReservations > treatment.Capacity {
+					//fmt.Println("Detected reservation overflow", reservation)
+					noConflicts = false
+				}
+
+				//fmt.Println(concurrentReservations)
+			}
+
+		}
+
+		paymentsFilter := bson.M{
+			"locationId": location.Id,
+		}
+
+		paymentsCursor, err := db.Collection("Payments").Find(nil, paymentsFilter)
+
+		if err != nil {
+			fmt.Println("Error finding payments", err)
+			verificationMutex.Unlock()
+			continue
+		}
+
+		var payments []Models.Payment
+		err = paymentsCursor.All(nil, &payments)
+		if err != nil {
+			fmt.Println("Error decoding payments", err)
+			verificationMutex.Unlock()
+			return
+		}
+
+		sold := 0
+
+		for _, payment := range payments {
+			sold += payment.Amount
+		}
+
+		conflicts := "No conflicts detected"
+		if !noConflicts {
+			conflicts = "Detected reservation overflow"
+		}
+		row := fmt.Sprintf("Time: %s, Location: '%s', Conflicts: '%s', Sold: %d,\n", time.Now().String(), location.Name, conflicts, sold)
+
+		_, err = file.WriteString(row)
+		if err != nil {
+			fmt.Println("Error writing to file", err)
+			return
+		}
+
+	}
+	verificationMutex.Unlock()
+
 }
